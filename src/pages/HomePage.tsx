@@ -2,7 +2,7 @@ import { Box, Container, CssBaseline } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import CardContainer from "../components/CardContainer";
 import SearchMenu from "../components/SearchMenu";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import Footer from "../components/Footer";
 
 function HomePage() {
   /** Name of the country, that was typed by user.
@@ -79,18 +79,7 @@ function HomePage() {
           selectedLanguage={selectedLanguage}
         />
       </Container>
-      <Box component="footer" bgcolor="#1C76D2" marginTop="20px">
-        <Container
-          sx={{
-            margin: "10px",
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-          }}
-        >
-          <GitHubIcon fontSize="large" />
-        </Container>
-      </Box>
+      <Footer />
     </Box>
   );
 }

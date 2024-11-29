@@ -4,6 +4,7 @@ import { Grid2 } from "@mui/material";
 import { Country } from "../types/commonTypes";
 import { MyContext } from "../context/MyContext";
 import { getUniqueLanguagesArray } from "../utils/helperFucntions";
+import { Box } from "@mui/joy";
 
 type CardContainerProps = {
   inputValue: string;
@@ -57,19 +58,42 @@ export default function CardContainer({
     let language: string[] = [];
     if (country.languages) {
       language = Object.values(country?.languages);
+      //console.log("language", language);
     }
+
     return (
-      /** 1 criterion was applied here */
+      // 1 criterion was applied here
       country.name.common.toLowerCase().includes(inputValue.toLowerCase()) &&
-      /** 2 criterion was applied here */
+      // 2 criterion was applied here
       (country.continents.some((continent) => {
         return continentsArray.includes(continent);
       }) ||
         continentsArray.length == 0) &&
-      /** 3 criterion was applied here */
-      (language.includes(selectedLanguage) || selectedLanguage == "")
+      //3 criterion was applied here
+      (language.includes(selectedLanguage) ||
+        selectedLanguage == "" ||
+        selectedLanguage == "All languages")
     );
   });
+
+  // const secondFilter = () => {
+  //   const uniqueLanguagesArray = getUniqueLanguagesArray(filterFunction);
+  //   setArrayOfLanguage(uniqueLanguagesArray);
+  //   const result = filterFunction.filter((country) => {
+  //     let language: string[] = [];
+  //     if (country.languages) {
+  //       language = Object.values(country?.languages);
+  //       //console.log("language", language);
+  //     }
+  //     return (
+  //       language.includes(selectedLanguage) ||
+  //       selectedLanguage == "" ||
+  //       selectedLanguage == "All languages"
+  //     );
+  //   });
+
+  //   return result;
+  // };
 
   return (
     <Grid2 container spacing={3}>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -7,9 +7,12 @@ type MapListProps = {
 };
 
 const MapList = ({ country }: MapListProps) => {
+  console.log("%c Maplist   component run", "color:purple");
+
   const [capitalCoordinates, setCapitalCoordinates] = useState<number[] | null>(
     null
   );
+  console.log("country", country);
 
   const fetchCapitalData = async () => {
     try {
@@ -18,7 +21,7 @@ const MapList = ({ country }: MapListProps) => {
         `https://restcountries.com/v3.1/name/${country}`
       );
       const data = await response.json();
-
+      console.log("data", data);
       const lat = data[0].latlng[0];
       const lon = data[0].latlng[1];
 
@@ -27,26 +30,26 @@ const MapList = ({ country }: MapListProps) => {
       console.error("We can not recieve data from restcountries", error);
     }
   };
-
-  if (country) {
+  useEffect(() => {
     fetchCapitalData();
-  }
+  }, []);
 
-  if (capitalCoordinates) {
-    return (
-      <MapContainer
-        //TODO Fix center
-        center={capitalCoordinates}
-        zoom={5}
-        style={{ width: "100%", height: "300px", marginTop: "50px" }}
-      >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
-        <Marker position={capitalCoordinates}>
-          <Popup>{country}</Popup>
-        </Marker>
-      </MapContainer>
-    );
-  }
+  return (
+    <>
+      {capitalCoordinates && (
+        <MapContainer
+          center={capitalCoordinates}
+          zoom={3}
+          style={{ width: "100%", height: "300px", marginTop: "0px" }}
+        >
+          <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />
+          <Marker position={capitalCoordinates}>
+            <Popup>{country}</Popup>
+          </Marker>
+        </MapContainer>
+      )}
+    </>
+  );
 };
 
 export default MapList;

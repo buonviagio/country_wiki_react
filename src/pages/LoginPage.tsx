@@ -15,6 +15,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { auth } from "../config/firebaseConfig";
 import { useLocation, useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 //import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
 //import AppTheme from "./theme/AppTheme";
 //import ColorModeSelect from "./theme/ColorModeSelect";
@@ -107,10 +108,15 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
     //?? WAS changed added location
     await login(email, password);
     // redirectTo("/");
-    redirectTo(location.state.prevPath);
 
-    setEmail(""); // To clear email
-    setPassword(""); // To clear password
+    // hear we check the prevPath, if ot exist weredirect to the country which user chosen before login, or redirect to profile pare
+    const redirectToPath = location.state?.prevPath || "/profile";
+    redirectTo(redirectToPath);
+
+    // To clear email
+    setEmail("");
+    // To clear password
+    setPassword("");
   };
 
   const validateInputs = () => {
@@ -145,7 +151,12 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
   /** The end of my logic */
 
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#FAFBFB" }}
+    >
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         {/*  <ColorModeSelect
@@ -187,7 +198,7 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
                 variant="outlined"
                 color={emailError ? "error" : "primary"}
                 //?
-                value={email} // Управляемое значение
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </FormControl>
@@ -206,8 +217,7 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? "error" : "primary"}
-                //?
-                value={password} // Управляемое значение
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </FormControl>
@@ -236,6 +246,7 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
           </Box>
         </Card>
       </SignInContainer>
-    </>
+      <Footer />
+    </Box>
   );
 }

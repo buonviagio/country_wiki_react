@@ -15,6 +15,7 @@ import Box from "@mui/joy/Box";
 import CardComments from "./CardComments";
 import { Button, Input, Typography } from "@mui/joy";
 import { AuthContext } from "../context/AuthContext";
+import { Alert, TextareaAutosize, TextField } from "@mui/material";
 
 type Comment = {
   author: string;
@@ -25,10 +26,12 @@ type CommentsProps = {
   country: string;
 };
 export default function Comments({ country }: CommentsProps) {
+  console.log("%c COMMENTS   component run", "color:orange");
+
   const [comments, setComments] = useState<Comment[] | null>(null);
   const { user } = useContext(AuthContext);
   const [newCommentText, setNewCommentText] = useState<string | null>();
-  const [comment, setComment] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   const getCommentsRealTime = () => {
     const commentsCollectionRefference = collection(
@@ -49,6 +52,15 @@ export default function Comments({ country }: CommentsProps) {
 
   const sendComment = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (
+      newCommentText === undefined ||
+      newCommentText === null ||
+      newCommentText === ""
+    ) {
+      setShowAlert(true);
+      return;
+    }
     const newComment: Comment = {
       author: user!.email,
       date: new Date(),
@@ -61,6 +73,7 @@ export default function Comments({ country }: CommentsProps) {
       );
 
       const docRef = await addDoc(commentsCollectionRefference, newComment);
+      setNewCommentText("");
       console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       console.log("Error adding document: ", err);
@@ -115,8 +128,31 @@ export default function Comments({ country }: CommentsProps) {
     <Box sx={{ width: "60%" }}>
       <Stack spacing={2}>
         {(comments && comments.length == 0) || comments === null ? (
-          <Box>
-            <Typography>No comments yet, be the first!</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              //height: "100vh", // Full viewport height to center vertically
+            }}
+          >
+            <Box
+              sx={{
+                border: "2px solid #1C76D2",
+                height: "40px",
+                width: "400px",
+                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+                borderRadius: 5,
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Typography color="#1C76D2">
+                No comments yet, be the first!
+              </Typography>
+            </Box>
           </Box>
         ) : (
           comments.map((comment, i) => {
@@ -133,19 +169,47 @@ export default function Comments({ country }: CommentsProps) {
           })
         )}
       </Stack>
-      <form>
-        <Stack spacing={1}>
-          <Input
+      <Box sx={{ padding: "25px" }}>
+        {showAlert && (
+          <Alert
+            variant="filled"
+            severity="warning"
+            onClose={() => setShowAlert(false)}
+          >
+            Cannot submit an empty comment
+          </Alert>
+        )}
+        <form>
+          <TextareaAutosize
             placeholder="Leave your comment here…"
             variant="outlined"
             color="primary"
+            value={newCommentText}
             onChange={hadleInput}
+            multiline
+            minRows={3}
+            maxRows={10}
+            style={{
+              width: "100%",
+              padding: "8px",
+              fontSize: "16px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
           />
-          <Button type="submit" onClick={sendComment}>
-            Submit
-          </Button>
-        </Stack>
-      </form>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              padding: "15px",
+            }}
+          >
+            <Button type="submit" onClick={sendComment}>
+              Submit
+            </Button>
+          </Box>
+        </form>
+      </Box>
     </Box>
   );
 }

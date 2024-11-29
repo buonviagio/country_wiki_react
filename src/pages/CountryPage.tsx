@@ -1,10 +1,19 @@
-import { Box, Grid2, ImageList, ImageListItem } from "@mui/material";
+import {
+  Box,
+  Container,
+  CssBaseline,
+  Grid2,
+  ImageList,
+  ImageListItem,
+} from "@mui/material";
 import { Key, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import MapList from "../components/MapList";
 import { DataFromWiki } from "../types/wikipediaTypes";
 import { Hit } from "../types/pixabayTypes";
 import Comments from "../components/Comments";
+import InformationForCountryPage from "../components/InformationForCountryPage";
+import Footer from "../components/Footer";
 
 function CountryPage() {
   console.log("%c CountryPage  component run", "color:red");
@@ -66,50 +75,90 @@ function CountryPage() {
   }, []);
 
   return (
-    <div>
-      <Grid2 container spacing={2} sx={{ padding: 2 }}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#FAFBFB" }}
+    >
+      <CssBaseline />
+      <Grid2
+        container
+        spacing={2}
+        sx={{
+          padding: 2,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <Box
           sx={{
             position: "relative",
-            width: "50%",
+            width: "80%",
             height: "300px",
             overflow: "hidden",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
+            borderRadius: 2,
           }}
         >
-          {<MapList country={country} />}
+          <MapList country={country} />
         </Box>
       </Grid2>
-      Country Page, information about {country}
-      <p>{dataFromWiki && dataFromWiki.extract}</p>
-      <ImageList
-        key={++imageID}
-        sx={{ width: 500, height: 450 }}
-        cols={3}
-        rowHeight={164}
+
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
       >
-        {dataFromPixabay &&
-          dataFromPixabay.hits.map(
-            (
-              item: {
-                img: Key | null | undefined;
-                largeImageURL: any;
-                tags: string | undefined;
-              },
-              index: number
-            ) => (
-              <ImageListItem key={index}>
-                <img
-                  srcSet={`${item.largeImageURL}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                  src={`${item.largeImageURL}?w=164&h=164&fit=crop&auto=format`}
-                  alt={item.tags}
-                  loading="lazy"
-                />
-              </ImageListItem>
-            )
-          )}
-      </ImageList>
-      <Comments country={country} />
-    </div>
+        <InformationForCountryPage
+          info={dataFromWiki && dataFromWiki.extract}
+        />
+      </Container>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ImageList
+          key={++imageID}
+          sx={{ width: 500, height: 450 }}
+          cols={2}
+          rowHeight={164}
+        >
+          {dataFromPixabay &&
+            dataFromPixabay.hits.map(
+              (
+                item: {
+                  img: Key | null | undefined;
+                  largeImageURL: any;
+                  tags: string | undefined;
+                },
+                index: number
+              ) => (
+                <ImageListItem key={index}>
+                  <img
+                    srcSet={`${item.largeImageURL}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                    src={`${item.largeImageURL}?w=164&h=164&fit=crop&auto=format`}
+                    alt={item.tags}
+                    loading="lazy"
+                  />
+                </ImageListItem>
+              )
+            )}
+        </ImageList>
+      </Box>
+      <Box
+        sx={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}
+      >
+        <Comments country={country} />
+      </Box>
+      <Footer />
+    </Box>
   );
 }
 

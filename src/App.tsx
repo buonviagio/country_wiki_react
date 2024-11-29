@@ -20,6 +20,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthContextProvider } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ProfilePage from "./pages/ProfilePage";
+import ProtectedRouteForProfilePage from "./components/ProtectedRouteForProfilePage";
 
 const Root = () => {
   return (
@@ -44,9 +46,15 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       />
+      <Route
+        path="profile"
+        element={
+          <ProtectedRouteForProfilePage>
+            <ProfilePage />
+          </ProtectedRouteForProfilePage>
+        }
+      />
 
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/info" element={<InformationPage />} />
       <Route path="*" element={<ErrorPage />} />
     </Route>
   )

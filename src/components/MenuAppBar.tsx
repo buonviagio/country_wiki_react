@@ -31,6 +31,7 @@ export default function MenuAppBar() {
   const menuAnchorRef = React.useRef(null); // Reference for positioning Popper
 
   const navigationToTheLoginPage = useNavigate();
+  const navigateToProfilePage = useNavigate();
 
   /** user loging */
   const { user, loader, logout } = useContext(AuthContext);
@@ -82,6 +83,7 @@ export default function MenuAppBar() {
   };
 
   const handleClose = () => {
+    navigateToProfilePage("/profile");
     console.log("CLOSE CLOSE :>> handleClose");
     setAnchorEl(null);
   };
@@ -150,7 +152,6 @@ export default function MenuAppBar() {
                 onClose={handleClose}
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
               </Menu>
             </div>
           )}
@@ -172,7 +173,7 @@ export default function MenuAppBar() {
               <MenuItem component={Link} to="/" onClick={handleCloseMenuList}>
                 Home
               </MenuItem>
-              <MenuItem
+              {/* <MenuItem
                 component={Link}
                 to="/about"
                 onClick={handleCloseMenuList}
@@ -185,22 +186,20 @@ export default function MenuAppBar() {
                 onClick={handleCloseMenuList}
               >
                 Information
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/register"
-                onClick={handleCloseMenuList}
-              >
-                Sign Up
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/login"
-                onClick={handleCloseMenuList}
-              >
-                Log In
-              </MenuItem>
-              <MenuItem onClick={handleCloseMenuList}>Logout</MenuItem>
+              </MenuItem> */}
+              {!user && (
+                <MenuItem
+                  component={Link}
+                  to="/register"
+                  onClick={handleCloseMenuList}
+                >
+                  Sign Up / Sign In
+                </MenuItem>
+              )}
+              {/* show log out only if user logged in */}
+              {user && (
+                <MenuItem onClick={handleCloseMenuList}>Logout</MenuItem>
+              )}
             </MenuList>
           </Paper>
         </Collapse>

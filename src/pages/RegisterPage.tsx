@@ -13,6 +13,9 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
+import Footer from "../components/Footer";
 //import AppTheme from "./theme/AppTheme";
 //import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
 //import ColorModeSelect from "./theme/ColorModeSelect";
@@ -66,6 +69,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
+  const { register } = useContext(AuthContext);
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -104,11 +108,16 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateInputs()) {
       return;
     }
+    /* if (nameError || emailError || passwordError) {
+      event.preventDefault();
+      return;
+    } */
     const data = new FormData(event.currentTarget);
     console.log({
       name: data.get("name"),
@@ -116,10 +125,25 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       email: data.get("email"),
       password: data.get("password"),
     });
+
+    const email = data.get("email") as string;
+    const password = data.get("password") as string;
+
+    try {
+      await register(email, password); // invoke register from context
+      console.log("User registered successfully!");
+    } catch (error) {
+      console.log("Registration failed:", error);
+    }
   };
 
   return (
-    <>
+    <Box
+      display="flex"
+      flexDirection="column"
+      minHeight="100vh"
+      sx={{ backgroundColor: "#FAFBFB" }}
+    >
       <CssBaseline enableColorScheme />
       {/* <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} /> */}
       <SignUpContainer direction="column" justifyContent="space-between">
@@ -218,7 +242,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ textAlign: "center" }}>
               Already have an account?{" "}
               <Link
-                href="/material-ui/getting-started/templates/sign-in/"
+                /* href="/material-ui/getting-started/templates/sign-in/" */
+                href="/login"
                 variant="body2"
                 sx={{ alignSelf: "center" }}
               >
@@ -228,6 +253,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           </Box>
         </Card>
       </SignUpContainer>
-    </>
+      <Footer />
+    </Box>
   );
 }
