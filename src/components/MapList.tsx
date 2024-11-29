@@ -39,7 +39,7 @@ const MapList = ({ country }: MapListProps) => {
       {capitalCoordinates && (
         <MapContainer
           center={capitalCoordinates}
-          zoom={3}
+          zoom={6}
           style={{ width: "100%", height: "300px", marginTop: "0px" }}
         >
           <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png" />

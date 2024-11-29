@@ -14,8 +14,11 @@ import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import { AuthContext } from "../context/AuthContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import Footer from "../components/Footer";
+import { redirect, useNavigate } from "react-router-dom";
+import { Alert } from "@mui/material";
+import { UserType } from "../types/commonTypes";
 //import AppTheme from "./theme/AppTheme";
 //import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
 //import ColorModeSelect from "./theme/ColorModeSelect";
@@ -67,14 +70,17 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [nameError, setNameError] = React.useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = React.useState("");
-  const { register } = useContext(AuthContext);
+  const redirectTo = useNavigate();
+  const [showAlert, setShowAlert] = React.useState(false);
+  const [newEmailText, setNewEmailText] = useState<string | null>("");
+  const [newPasswordVlue, setNewPasswordVlue] = useState<string | null>("");
+
+  const { register, userExistInfo, setUserExistInfo, user } =
+    useContext(AuthContext);
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const password = document.getElementById("password") as HTMLInputElement;
-    const name = document.getElementById("name") as HTMLInputElement;
 
     let isValid = true;
 
@@ -96,15 +102,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setPasswordErrorMessage("");
     }
 
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage("Name is required.");
-      isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage("");
-    }
-
     return isValid;
   };
 
@@ -120,8 +117,6 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     } */
     const data = new FormData(event.currentTarget);
     console.log({
-      name: data.get("name"),
-      lastName: data.get("lastName"),
       email: data.get("email"),
       password: data.get("password"),
     });
@@ -130,11 +125,32 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     const password = data.get("password") as string;
 
     try {
-      await register(email, password); // invoke register from context
+      // Logic to register the user, when user does not exist, it is possible to register, and oposite
+      // we need to resieve the user from method register, to define our next brhaviour.
+      const registeredUser: UserType | null = await register(email, password); // invoke register from context
+
+      if (registeredUser) {
+        redirectTo("/profile");
+        return;
+      } else {
+        setShowAlert(true);
+        setNewEmailText("");
+        setNewPasswordVlue("");
+      }
+
+      //redirectTo("/profile");
       console.log("User registered successfully!");
     } catch (error) {
       console.log("Registration failed:", error);
     }
+  };
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewEmailText(event.target.value);
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewPasswordVlue(event.target.value);
   };
 
   return (
@@ -145,8 +161,18 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       sx={{ backgroundColor: "#FAFBFB" }}
     >
       <CssBaseline enableColorScheme />
+
       {/* <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} /> */}
       <SignUpContainer direction="column" justifyContent="space-between">
+        {showAlert && (
+          <Alert
+            variant="filled"
+            severity="warning"
+            onClose={() => setShowAlert(false)}
+          >
+            {userExistInfo}
+          </Alert>
+        )}
         <Card variant="outlined">
           {/* <SitemarkIcon /> */}
           <Typography
@@ -161,7 +187,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             onSubmit={handleSubmit}
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
-            <FormControl>
+            {/*  <FormControl>
               <FormLabel htmlFor="name">Full name</FormLabel>
               <TextField
                 autoComplete="name"
@@ -174,7 +200,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 helperText={nameErrorMessage}
                 color={nameError ? "error" : "primary"}
               />
-            </FormControl>
+            </FormControl> */}
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
@@ -188,6 +214,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 error={emailError}
                 helperText={emailErrorMessage}
                 color={passwordError ? "error" : "primary"}
+                value={newEmailText || ""}
+                onChange={handleEmailChange} // Add this handler
               />
             </FormControl>
             <FormControl>
@@ -204,12 +232,14 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 color={passwordError ? "error" : "primary"}
+                value={newPasswordVlue || ""}
+                onChange={handlePasswordChange} // Add this handler
               />
             </FormControl>
-            <FormControlLabel
+            {/* <FormControlLabel
               control={<Checkbox value="allowExtraEmails" color="primary" />}
               label="I want to receive updates via email."
-            />
+            /> */}
             <Button
               type="submit"
               fullWidth

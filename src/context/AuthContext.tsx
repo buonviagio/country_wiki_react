@@ -21,6 +21,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loader: boolean;
+  userExistInfo: string;
 };
 
 // 2 Define context initial value
@@ -35,6 +36,7 @@ const AuthContextInitialValue = {
     throw new Error("Context not initialized");
   },
   loader: true,
+  userExistInfo: "",
 };
 
 // 1 create context
@@ -46,6 +48,7 @@ export const AuthContext = createContext<AuthContextType>(
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loader, setLoader] = useState(true);
+  const [userExistInfo, setUserExistInfo] = useState<string>("");
 
   //const navigateToCountryPage = useNavigate();
 
@@ -57,12 +60,14 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         email,
         password
       );
-      const userObject = userCredential.user;
-
-      console.log("user from login:>> ", userObject);
+      const userObject = userCredential.user as UserType;
+      // set the user, it is no nececesary to do it
+      setUser(userObject);
+      return userObject;
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = (error as Error).message;
+      setUserExistInfo(errorMessage);
       console.log("errorMessage :>> ", errorMessage);
       console.log("errorCode :>> ", errorCode);
     } finally {
@@ -104,6 +109,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
+        console.log("checkUserStatus====");
         const uid = user.uid;
         if (user.email) {
           setUser({ email: user.email, uid: user.uid });
@@ -136,7 +142,16 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, setUser, register, login, loader, logout }}
+      value={{
+        user,
+        setUser,
+        register,
+        login,
+        loader,
+        logout,
+        userExistInfo,
+        setUserExistInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>
