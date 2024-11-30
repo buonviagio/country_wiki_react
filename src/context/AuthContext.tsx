@@ -49,17 +49,22 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loader, setLoader] = useState(true);
   const [userExistInfo, setUserExistInfo] = useState<string>("");
+  const [userExistInfoForLoginPage, setUserExistInfoForLoginPage] =
+    useState<string>("");
 
   //const navigateToCountryPage = useNavigate();
 
   const register = async (email: string, password: string) => {
+    // for functionality remember me
     localStorage.setItem("email", email);
+
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+
       const userObject = userCredential.user as UserType;
       // set the user, it is no nececesary to do it
       setUser(userObject);
@@ -86,7 +91,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       console.log("USER LOG IN SUCCESFUL :>> ", userObject);
       if (userObject.uid && userObject.email) {
         setUser({ uid: userObject.uid, email: userObject.email });
-
+        return userObject;
         //Redirect to the country page
         // const locationPath = location.state.prevPath;
         // console.log("locationPath :>> ", locationPath);
@@ -95,10 +100,12 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         // }
       } else {
         console.log("EMAIL DOES NOT EXIST :>> ");
+        //setUserExistInfoForLoginPage("Email does not exist");
       }
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = (error as Error).message;
+      setUserExistInfoForLoginPage(errorMessage);
       console.log("errorMessage from method login:>> ", errorMessage);
       console.log("errorCode from method login:>> ", errorCode);
     }
@@ -151,6 +158,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         logout,
         userExistInfo,
         setUserExistInfo,
+        userExistInfoForLoginPage,
       }}
     >
       {children}

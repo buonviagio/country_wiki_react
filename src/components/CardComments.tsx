@@ -1,14 +1,15 @@
 import { Card, CardContent, Typography } from "@mui/material";
 import { Timestamp } from "firebase/firestore";
-import React from "react";
 
 type CardCommentsProps = {
+  country: string | undefined;
   author: string;
   text: string;
   date: Timestamp;
 };
 
 export default function CardComments({
+  country,
   author,
   text,
   date,
@@ -23,6 +24,9 @@ export default function CardComments({
       <CardContent>
         <Typography variant="h6" component="div">
           {author}
+        </Typography>
+        <Typography variant="body3" component="div">
+          {country && country}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {text}

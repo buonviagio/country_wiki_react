@@ -2,11 +2,16 @@ import { ChangeEvent, FormEvent, useContext, useEffect, useState } from "react";
 import { db } from "../config/firebaseConfig";
 import {
   addDoc,
+  arrayUnion,
   collection,
+  doc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
+  setDoc,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import Stack from "@mui/joy/Stack";
 import { styled } from "@mui/joy/styles";
@@ -16,17 +21,20 @@ import CardComments from "./CardComments";
 import { Button, Input, Typography } from "@mui/joy";
 import { AuthContext } from "../context/AuthContext";
 import { Alert, TextareaAutosize, TextField } from "@mui/material";
+import UpdateCommentOption from "./UpdateCommentOption";
 
 type Comment = {
   author: string;
   date: Timestamp | Date;
   text: string;
+  countryId: string;
+  commentId: string;
 };
 type CommentsProps = {
   country: string;
 };
 export default function Comments({ country }: CommentsProps) {
-  console.log("%c COMMENTS   component run", "color:orange");
+  //console.log("%c COMMENTS   component run", "color:orange");
 
   const [comments, setComments] = useState<Comment[] | null>(null);
   const { user } = useContext(AuthContext);
@@ -43,12 +51,64 @@ export default function Comments({ country }: CommentsProps) {
       (querySnapshot) => {
         const arrayOfComments: Comment[] = [];
         querySnapshot.forEach((doc) => {
-          arrayOfComments.push(doc.data() as Comment);
+          const commentData = doc.data() as Comment;
+          const neWComment = {
+            ...commentData,
+            commentId: doc.id,
+            countryId: country,
+          };
+          arrayOfComments.push(neWComment);
+          //arrayOfComments.push(doc.data() as Comment);
         });
         setComments(arrayOfComments as Comment[]);
       }
     );
   };
+
+  /*
+
+
+
+  */
+
+  const addCommentReference = async (
+    email: string,
+    countryId: string,
+    commentId: string
+  ) => {
+    try {
+      const userCommentsRef = doc(db, "usersComments", email);
+
+      // Update the user's comment references
+      await setDoc(
+        userCommentsRef,
+        {
+          // add to comments array
+          comments: arrayUnion({ countryId, commentId }),
+        },
+        { merge: true } // to be shure other data in the document isn't overwritten
+      );
+
+      console.log("Comment reference added successfully! ======>>>>>>>");
+    } catch (error) {
+      if (error.code === "not-found") {
+        // Create the document if it doesn't exist
+        const newUserComments = {
+          comments: [{ countryId, commentId }],
+        };
+        await setDoc(doc(db, "usersComments", email), newUserComments);
+        console.log("User document created and comment reference added!");
+      } else {
+        console.error("Error adding comment reference: ", error);
+      }
+    }
+  };
+
+  /*
+  
+  
+  
+  */
 
   const sendComment = async (e: FormEvent) => {
     e.preventDefault();
@@ -62,6 +122,7 @@ export default function Comments({ country }: CommentsProps) {
       return;
     }
     const newComment: Comment = {
+      //To be sure, that user is not null
       author: user!.email,
       date: new Date(),
       text: newCommentText,
@@ -71,39 +132,27 @@ export default function Comments({ country }: CommentsProps) {
         db,
         `countries/${country}/comments`
       );
-
+      // Add the comment to Firestore and get the document reference
       const docRef = await addDoc(commentsCollectionRefference, newComment);
+      // to clear the new comment input field
       setNewCommentText("");
+
+      // Add the comment reference to the user's `usersComments/{email}` document
+      await addCommentReference(user!.email, country, docRef.id);
+
       console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       console.log("Error adding document: ", err);
     }
   };
 
-  // const getComments = async () => {
-  //   try {
-  //     const commentsCollectionRefference = collection(
-  //       db,
-  //       `countries/${country}/comments`
-  //     );
-  //     //recieve all documents
-  //     const querySnapshot = await getDocs(commentsCollectionRefference);
-  //     const arrayOfComments: Comment[] = [];
-  //     //console.log("querySnapshot :>> ", querySnapshot);
-  //     querySnapshot.forEach((doc) => {
-  //       // retrie Object with comments based on props(name of country), which contain array of comments
-  //       const commentsArray = doc.data();
-  //       console.log("commentsArray :>> ", commentsArray);
-  //       arrayOfComments.push(commentsArray as Comment);
-  //     });
-  //     setComments(arrayOfComments);
-  //   } catch (err) {
-  //     console.log("Error when we try to get comments from db :>> ", err);
-  //   }
-  // };
+  /*
+  
+  
+  
+  */
 
   useEffect(() => {
-    //getComments();
     getCommentsRealTime();
   }, []);
 
@@ -163,7 +212,16 @@ export default function Comments({ country }: CommentsProps) {
                   author={comment.author}
                   text={comment.text}
                   date={comment.date as Timestamp}
+                  country={undefined}
                 />
+                {user && user.email === comment.author && (
+                  <UpdateCommentOption
+                    key={i}
+                    email={comment.author}
+                    countryId={comment.countryId}
+                    commentId={comment.commentId}
+                  />
+                )}
               </Item>
             );
           })

@@ -10,7 +10,7 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import { Button, Link } from "@mui/material";
+import { Alert, Button, Link } from "@mui/material";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { auth } from "../config/firebaseConfig";
@@ -77,7 +77,10 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [showAlert, setShowAlert] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+
+  const { userExistInfoForLoginPage } = useContext(AuthContext);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -106,7 +109,13 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
     const password = data.get("email");
     //call register function
     //?? WAS changed added location
-    await login(email, password);
+    const user = await login(email, password);
+    if (!user) {
+      // redirect to register page if user does not exist in the database
+      setShowAlert(true);
+      //redirectTo("/register");
+      return;
+    }
     // redirectTo("/");
 
     // hear we check the prevPath, if ot exist weredirect to the country which user chosen before login, or redirect to profile pare
@@ -159,6 +168,15 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
     >
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
+        {showAlert && (
+          <Alert
+            variant="filled"
+            severity="warning"
+            onClose={() => setShowAlert(false)}
+          >
+            {userExistInfoForLoginPage}
+          </Alert>
+        )}
         {/*  <ColorModeSelect
           sx={{ position: "fixed", top: "1rem", right: "1rem" }}
         /> */}

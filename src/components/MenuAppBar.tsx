@@ -27,7 +27,7 @@ export default function MenuAppBar() {
 
   const [auth, setAuth] = React.useState(false);
 
-  const [openMenuList, setOpenMenuList] = React.useState(false); // State to control MenuList visibility
+  const [openMenuList, setOpenMenuList] = React.useState(false);
   const menuAnchorRef = React.useRef(null); // Reference for positioning Popper
 
   const navigationToTheLoginPage = useNavigate();
@@ -122,7 +122,6 @@ export default function MenuAppBar() {
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {user?.email ? "Loged in" : "Loged out"}
-            {/* Photos */}
           </Typography>
           {auth && (
             <div>
