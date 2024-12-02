@@ -75,6 +75,7 @@ export default function MenuAppBar() {
       return;
     }
     setOpenMenuList(false);
+    //logout();
   };
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -197,7 +198,14 @@ export default function MenuAppBar() {
               )}
               {/* show log out only if user logged in */}
               {user && (
-                <MenuItem onClick={handleCloseMenuList}>Logout</MenuItem>
+                <MenuItem
+                  onClick={(e) => {
+                    handleCloseMenuList(e);
+                    logout();
+                  }}
+                >
+                  Logout
+                </MenuItem>
               )}
             </MenuList>
           </Paper>

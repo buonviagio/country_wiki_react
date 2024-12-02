@@ -252,7 +252,7 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
             >
               Sign in
             </Button>
-            <Link
+            {/*  <Link
               component="button"
               type="button"
               onClick={handleClickOpen}
@@ -260,7 +260,7 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
               sx={{ alignSelf: "center" }}
             >
               Forgot your password?
-            </Link>
+            </Link> */}
           </Box>
         </Card>
       </SignInContainer>

@@ -154,10 +154,15 @@ export default function ProfilePage() {
             width: "450px",
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.3)",
             borderRadius: 2,
+            marginBottom: "10px",
           }}
         >
           <List
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            sx={{
+              width: "100%",
+              maxWidth: 360,
+              bgcolor: "background.paper",
+            }}
           >
             <ListItem>
               <ListItemAvatar>

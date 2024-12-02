@@ -1,7 +1,18 @@
 import { Box, Button, Collapse, TextareaAutosize } from "@mui/material";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  collection,
+  deleteDoc,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, FormEvent, useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 export default function UpdateCommentOption({
@@ -51,6 +62,53 @@ export default function UpdateCommentOption({
     }
   };
 
+  /*
+    
+    
+    
+    */
+
+  const deleteComment = async (e: FormEvent) => {
+    e.preventDefault();
+
+    // we get snapshot based on properties, in our case, it is desired comment from countries subarray
+    const commentRef = doc(db, `countries/${countryId}/comments/${commentId}`);
+    // now we delete this snapshot
+    await deleteDoc(commentRef);
+
+    // we get snapshot based on properties, in our case, it is array of comments in subarray userComments
+    const userCommentsRef = doc(db, `usersComments/${user?.email}`);
+    const commentReference = { commentId, countryId };
+    await updateDoc(userCommentsRef, {
+      comments: arrayRemove(commentReference),
+    });
+    fetchUserComments();
+    console.log("DELETE FUNCTION SUCCESS");
+  };
+
+  const deleteCommentWithQuery = async () => {
+    const commentsCollectionRef = collection(
+      db,
+      `usersComments/${user?.email}/comments`
+    );
+    const q = query(
+      commentsCollectionRef,
+      where("commentId", "==", commentId),
+      where("countryId", "==", countryId)
+    );
+    //execute query
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (docSnapshot) => {
+      const docRef = doc(
+        db,
+        `usersComments/${user?.email}/comments/${docSnapshot.id}`
+      );
+      await deleteDoc(docRef);
+      console.log(`Deleted comment: ${docSnapshot.id}`);
+    });
+  };
+
   const hadleInput = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     console.log("e.target.value :>> ", e.target.value);
@@ -85,6 +143,9 @@ export default function UpdateCommentOption({
               padding: "15px",
             }}
           >
+            <Button type="submit" onClick={deleteComment}>
+              Delete comment
+            </Button>
             <Button type="submit" onClick={modifyComment}>
               Submit
             </Button>

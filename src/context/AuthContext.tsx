@@ -165,32 +165,3 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
     </AuthContext.Provider>
   );
 };
-
-// const commentsCollection = [
-//   {
-//     id: "spain",
-//     comments: [
-//       {
-//         text: "asdad",
-//         email:"asdasd"
-//       },
-//       {
-//         text: "asdad",
-//         email:"asdasd"
-//       },
-//     ]
-//   },
-//   {
-//     id: "germany",
-//     comments: [
-//       {
-//         text: "asdad",
-//         email:"asdasd"
-//       },
-//       {
-//         text: "asdad",
-//         email:"asdasd"
-//       },
-//     ]
-//   },
-// ]

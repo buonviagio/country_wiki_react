@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from "@mui/material";
-import React, { useContext, useState } from "react";
+import { useContext } from "react";
 import CardComments from "./CardComments";
 import { styled } from "@mui/joy/styles";
 import Sheet from "@mui/joy/Sheet";
@@ -50,9 +50,7 @@ export default function ShowCommentsOnUserPage({
                 alignItems: "center",
               }}
             >
-              <Typography color="#1C76D2">
-                No comments yet, be the first!
-              </Typography>
+              <Typography color="#1C76D2">No comments yet!</Typography>
             </Box>
           </Box>
         ) : (
