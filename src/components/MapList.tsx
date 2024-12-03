@@ -3,7 +3,7 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 type MapListProps = {
-  country: string;
+  country: string | undefined;
 };
 
 const MapList = ({ country }: MapListProps) => {
@@ -12,7 +12,6 @@ const MapList = ({ country }: MapListProps) => {
   const [capitalCoordinates, setCapitalCoordinates] = useState<number[] | null>(
     null
   );
-  console.log("country", country);
 
   const fetchCapitalData = async () => {
     try {
@@ -21,7 +20,6 @@ const MapList = ({ country }: MapListProps) => {
         `https://restcountries.com/v3.1/name/${country}`
       );
       const data = await response.json();
-      console.log("data", data);
       const lat = data[0].latlng[0];
       const lon = data[0].latlng[1];
 

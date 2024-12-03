@@ -5,6 +5,7 @@ import { Country } from "../types/commonTypes";
 import { MyContext } from "../context/MyContext";
 import { getUniqueLanguagesArray } from "../utils/helperFucntions";
 import { Box } from "@mui/joy";
+import Loader from "./Loader";
 
 type CardContainerProps = {
   inputValue: string;
@@ -98,7 +99,7 @@ export default function CardContainer({
   return (
     <Grid2 container spacing={3}>
       {countries.length === 0 ? (
-        <p>Loading....</p>
+        <Loader />
       ) : (
         // here the cards of countries are created
         filterFunction.map((country) => {

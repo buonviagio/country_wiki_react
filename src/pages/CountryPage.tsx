@@ -65,7 +65,7 @@ function CountryPage() {
   useEffect(() => {
     const makeRequests = async () => {
       await getDataWiki(country!);
-      await getPixabayData(country);
+      await getPixabayData(country!);
     };
     if (country) {
       makeRequests();
@@ -130,7 +130,7 @@ function CountryPage() {
           cols={2}
           rowHeight={164}
         >
-          {dataFromPixabay &&
+          {dataFromPixabay && dataFromPixabay.hits.length > 0 ? (
             dataFromPixabay.hits.map(
               (
                 item: {
@@ -149,7 +149,20 @@ function CountryPage() {
                   />
                 </ImageListItem>
               )
-            )}
+            )
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+                width: "100%",
+              }}
+            >
+              No images available
+            </Box>
+          )}
         </ImageList>
       </Box>
       <Box

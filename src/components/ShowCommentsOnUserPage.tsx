@@ -50,15 +50,17 @@ export default function ShowCommentsOnUserPage({
                 alignItems: "center",
               }}
             >
-              <Typography color="#1C76D2">No comments yet!</Typography>
+              <Typography color="#1C76D2">
+                You haven't leaved any comments yet!
+              </Typography>
             </Box>
           </Box>
         ) : (
           comments.map((comment, i) => {
             return (
-              <Item>
+              <Item key={comment.commentId}>
                 <CardComments
-                  key={i}
+                  /* key={i} */
                   country={comment.country}
                   author={comment.author}
                   text={comment.text}
@@ -66,7 +68,7 @@ export default function ShowCommentsOnUserPage({
                 />
                 {user && user.email === comment.author && (
                   <UpdateCommentOption
-                    key={i}
+                    /* key={i} */
                     countryId={comment.country}
                     commentId={comment.commentId}
                     fetchUserComments={fetchUserComments}

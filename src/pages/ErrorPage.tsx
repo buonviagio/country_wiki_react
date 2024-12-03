@@ -1,5 +1,4 @@
 import { Box, Container, CssBaseline, Typography } from "@mui/material";
-import React from "react";
 import Footer from "../components/Footer";
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 

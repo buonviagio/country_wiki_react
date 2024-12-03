@@ -10,51 +10,36 @@ import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import MenuItem from "@mui/material/MenuItem";
-//import Menu from "@mui/material/Menu";
-import Popper from "@mui/material/Popper";
-import Grow from "@mui/material/Grow";
 import Paper from "@mui/material/Paper";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
 import MenuList from "@mui/material/MenuList";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
-import { User } from "../types/commonTypes";
 import { Collapse, Menu } from "@mui/material";
 
 export default function MenuAppBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
   const [auth, setAuth] = React.useState(false);
-
   const [openMenuList, setOpenMenuList] = React.useState(false);
-  const menuAnchorRef = React.useRef(null); // Reference for positioning Popper
+  const menuAnchorRef = React.useRef(null);
 
   const navigationToTheLoginPage = useNavigate();
   const navigateToProfilePage = useNavigate();
 
-  /** user loging */
   const { user, loader, logout } = useContext(AuthContext);
-  /* const user1: User = {
-    userName: "User1",
-    email: "test@test.com",
-  }; */
-  /** the end of user login */
 
   const handleAuthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("event.target :>> ", event.target.checked);
     if (event.target.checked && user === null) {
-      console.log("LOGIN PLEASE :>> ");
-      //setAuth(false);
       navigationToTheLoginPage("/login");
     } else {
-      setAuth(false);
+      //setAuth(false);
       logout();
     }
-
-    if (event.target.checked && user !== null) {
+    /*  if (event.target.checked && user !== null) {
+      console.log("handleAuthChange BLOCK IF ");
       setAuth(true);
-    }
+    } */
     console.log("CLOSE CLOSE :>> handleAuthChange");
     setAuth(event.target.checked);
   };
@@ -116,8 +101,10 @@ export default function MenuAppBar() {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
-            onClick={handleMenuToggle} // Open/close the dropdown menu on click
-            ref={menuAnchorRef} // Set reference for Popper positioning
+            // Open/close the dropdown menu on click
+            onClick={handleMenuToggle}
+            // Set reference for Popper positioning
+            ref={menuAnchorRef}
           >
             <MenuIcon />
           </IconButton>
@@ -173,20 +160,6 @@ export default function MenuAppBar() {
               <MenuItem component={Link} to="/" onClick={handleCloseMenuList}>
                 Home
               </MenuItem>
-              {/* <MenuItem
-                component={Link}
-                to="/about"
-                onClick={handleCloseMenuList}
-              >
-                About
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/info"
-                onClick={handleCloseMenuList}
-              >
-                Information
-              </MenuItem> */}
               {!user && (
                 <MenuItem
                   component={Link}

@@ -10,15 +10,11 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import { Alert, Button, Link } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { auth } from "../config/firebaseConfig";
 import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
-//import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
-//import AppTheme from "./theme/AppTheme";
-//import ColorModeSelect from "./theme/ColorModeSelect";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -62,12 +58,9 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function LogIn(props: { disableCustomTheme?: boolean }) {
+export default function LogIn() {
   const location = useLocation();
   const redirectTo = useNavigate();
-
-  console.log("location :>> ", location);
-
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const { login } = useContext(AuthContext);
@@ -78,37 +71,50 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
   const [showAlert, setShowAlert] = React.useState(false);
-  const [open, setOpen] = React.useState(false);
+  //const [open, setOpen] = React.useState(false);
+  const [checkBoxState, setCheckBoxState] = React.useState(true);
 
   const { userExistInfoForLoginPage } = useContext(AuthContext);
 
-  const handleClickOpen = () => {
+  /* const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
+  }; */
+
+  const handleCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckBoxState(event.target.checked);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    /* if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    } */
 
     const isValid = validateInputs();
     if (!isValid) return;
 
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+
     const email = data.get("email");
-    const password = data.get("email");
+    const password = data.get("password");
+
     //call register function
     //?? WAS changed added location
+
+    /** remember block */
+    if (checkBoxState) {
+      localStorage.setItem("email", email);
+      localStorage.setItem("password", password);
+      const localEmail = localStorage.getItem("email");
+      const localPassword = localStorage.getItem("password");
+      console.log("LOCAL PASS AND EMAIL", localEmail, localPassword);
+    } else {
+      localStorage.removeItem("email");
+      localStorage.removeItem("password");
+    }
+    /**the end of remember block */
+
     const user = await login(email, password);
     if (!user) {
       // redirect to register page if user does not exist in the database
@@ -156,8 +162,15 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
   };
   /** The end of the code from MUI */
 
-  /** My logic */
-  /** The end of my logic */
+  React.useEffect(() => {
+    // here we set email and pass if user choose `remember me`
+    const localStoreEmail = localStorage.getItem("email");
+    const localStorePassword = localStorage.getItem("password");
+    if (localStoreEmail && localStorePassword) {
+      setEmail(localStoreEmail);
+      setPassword(localStorePassword);
+    }
+  }, []);
 
   return (
     <Box
@@ -240,7 +253,14 @@ export default function LogIn(props: { disableCustomTheme?: boolean }) {
               />
             </FormControl>
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={
+                <Checkbox
+                  checked={checkBoxState}
+                  value="remember"
+                  color="primary"
+                  onChange={handleCheckBox}
+                />
+              }
               label="Remember me"
             />
             {/* <ForgotPassword open={open} handleClose={handleClose} /> */}

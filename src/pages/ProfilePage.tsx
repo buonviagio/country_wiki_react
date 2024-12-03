@@ -101,7 +101,7 @@ export default function ProfilePage() {
   const fetchUserComments = async () => {
     // Assumes that we already have the logged-in user
     const email = user!.email;
-    const comments = await getUserComments(email);
+    const comments: AllCommentFromUser[] = await getUserComments(email);
     const arrayOfComments: AllCommentFromUser[] = [];
     comments.forEach((doc) => {
       //creating array of comments

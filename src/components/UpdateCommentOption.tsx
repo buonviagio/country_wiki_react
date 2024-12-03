@@ -111,7 +111,6 @@ export default function UpdateCommentOption({
 
   const hadleInput = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    console.log("e.target.value :>> ", e.target.value);
     setNewCommentText(e.target.value);
   };
 

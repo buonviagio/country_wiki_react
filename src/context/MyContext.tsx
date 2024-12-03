@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 
 type MyContextProviderProps = {
   children: ReactNode;
@@ -18,7 +18,6 @@ export const MyContext =
   createContext<LanguageArrayContextType>(contextInitValue);
 
 export const MyContextProvider = ({ children }: MyContextProviderProps) => {
-  //console.log("children :>> ", children);
   const [arrayOfLanguage, setArrayOfLanguage] = useState<Set<string> | null>(
     null
   );

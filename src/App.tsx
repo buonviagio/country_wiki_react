@@ -1,6 +1,3 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
 import HomePage from "./pages/HomePage";
 import {
@@ -10,8 +7,6 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import AboutPage from "./pages/AboutPage";
-import InformationPage from "./pages/InformationPage";
 import ErrorPage from "./pages/ErrorPage";
 import MenuAppBar from "./components/MenuAppBar";
 import CountryPage from "./pages/CountryPage";
@@ -61,7 +56,6 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  //return <HomePage />;
   return (
     <>
       <AuthContextProvider>

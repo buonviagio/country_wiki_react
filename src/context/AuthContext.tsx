@@ -8,7 +8,6 @@ import {
 } from "firebase/auth";
 import { auth } from "../config/firebaseConfig";
 import { Login } from "@mui/icons-material";
-import { Navigate, useNavigate } from "react-router-dom";
 
 type AuthContextProviderProps = {
   children: ReactNode;
@@ -56,7 +55,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
   const register = async (email: string, password: string) => {
     // for functionality remember me
-    localStorage.setItem("email", email);
+    //localStorage.setItem("email", email);
 
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -88,7 +87,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
         password
       );
       const userObject = userVerification.user;
-      console.log("USER LOG IN SUCCESFUL :>> ", userObject);
+
       if (userObject.uid && userObject.email) {
         setUser({ uid: userObject.uid, email: userObject.email });
         return userObject;
@@ -116,17 +115,15 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        console.log("checkUserStatus====");
-        const uid = user.uid;
+        //const uid = user.uid;
         if (user.email) {
           setUser({ email: user.email, uid: user.uid });
           setLoader(false);
-          console.log("user is loged in:>> ", user);
+          console.log("user is loged in:>> ");
         }
         // ...
       } else {
         // User is signed out
-        // ...
         setLoader(false);
       }
     });
@@ -135,11 +132,11 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
   const logout = () => {
     signOut(auth)
       .then(() => {
-        console.log("Sign-out successful. ");
+        console.log("Sign-out successful.");
         setUser(null);
       })
       .catch((error) => {
-        // An error happened.
+        console.log("The problem was occurred during sign out =>", error);
       });
   };
 

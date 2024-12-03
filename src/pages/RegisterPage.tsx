@@ -1,10 +1,8 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
 import Link from "@mui/material/Link";
@@ -16,12 +14,9 @@ import { styled } from "@mui/material/styles";
 import { AuthContext } from "../context/AuthContext";
 import { useContext, useState } from "react";
 import Footer from "../components/Footer";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Alert } from "@mui/material";
 import { UserType } from "../types/commonTypes";
-//import AppTheme from "./theme/AppTheme";
-//import { GoogleIcon, FacebookIcon, SitemarkIcon } from "./CustomIcons";
-//import ColorModeSelect from "./theme/ColorModeSelect";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -65,7 +60,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
+export default function SignUp() {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
@@ -75,8 +70,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [newEmailText, setNewEmailText] = useState<string | null>("");
   const [newPasswordVlue, setNewPasswordVlue] = useState<string | null>("");
 
-  const { register, userExistInfo, setUserExistInfo, user } =
-    useContext(AuthContext);
+  const { register, userExistInfo } = useContext(AuthContext);
 
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
@@ -111,15 +105,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     if (!validateInputs()) {
       return;
     }
-    /* if (nameError || emailError || passwordError) {
-      event.preventDefault();
-      return;
-    } */
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
 
     const email = data.get("email") as string;
     const password = data.get("password") as string;
@@ -134,11 +121,11 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         return;
       } else {
         setShowAlert(true);
+        //to clear input fields
         setNewEmailText("");
         setNewPasswordVlue("");
       }
 
-      //redirectTo("/profile");
       console.log("User registered successfully!");
     } catch (error) {
       console.log("Registration failed:", error);

@@ -8,6 +8,7 @@ import {
   getDoc,
   getDocs,
   onSnapshot,
+  orderBy,
   query,
   setDoc,
   Timestamp,
@@ -18,20 +19,20 @@ import { styled } from "@mui/joy/styles";
 import Sheet from "@mui/joy/Sheet";
 import Box from "@mui/joy/Box";
 import CardComments from "./CardComments";
-import { Button, Input, Typography } from "@mui/joy";
+import { Button, Typography } from "@mui/joy";
 import { AuthContext } from "../context/AuthContext";
-import { Alert, TextareaAutosize, TextField } from "@mui/material";
+import { Alert, TextareaAutosize } from "@mui/material";
 import UpdateCommentOption from "./UpdateCommentOption";
 
 type Comment = {
   author: string;
   date: Timestamp | Date;
   text: string;
-  countryId: string;
-  commentId: string;
+  countryId: string | undefined;
+  commentId: string | undefined;
 };
 type CommentsProps = {
-  country: string;
+  country: string | undefined;
 };
 export default function Comments({ country }: CommentsProps) {
   //console.log("%c COMMENTS   component run", "color:orange");
@@ -46,23 +47,27 @@ export default function Comments({ country }: CommentsProps) {
       db,
       `countries/${country}/comments`
     );
-    const unsubscribe = onSnapshot(
+
+    //here we sort the comments based on date
+    const commentsQuery = query(
       commentsCollectionRefference,
-      (querySnapshot) => {
-        const arrayOfComments: Comment[] = [];
-        querySnapshot.forEach((doc) => {
-          const commentData = doc.data() as Comment;
-          const neWComment = {
-            ...commentData,
-            commentId: doc.id,
-            countryId: country,
-          };
-          arrayOfComments.push(neWComment);
-          //arrayOfComments.push(doc.data() as Comment);
-        });
-        setComments(arrayOfComments as Comment[]);
-      }
+      orderBy("date", "asc")
     );
+
+    const unsubscribe = onSnapshot(commentsQuery, (querySnapshot) => {
+      const arrayOfComments: Comment[] = [];
+      querySnapshot.forEach((doc) => {
+        const commentData = doc.data() as Comment;
+        const neWComment: Comment = {
+          ...commentData,
+          commentId: doc.id,
+          countryId: country,
+        };
+        arrayOfComments.push(neWComment);
+        //arrayOfComments.push(doc.data() as Comment);
+      });
+      setComments(arrayOfComments as Comment[]);
+    });
   };
 
   /*
@@ -169,7 +174,6 @@ export default function Comments({ country }: CommentsProps) {
 
   const hadleInput = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    console.log("e.target.value :>> ", e.target.value);
     setNewCommentText(e.target.value);
   };
 
@@ -206,9 +210,9 @@ export default function Comments({ country }: CommentsProps) {
         ) : (
           comments.map((comment, i) => {
             return (
-              <Item>
+              <Item key={comment.commentId}>
                 <CardComments
-                  key={i}
+                  /* key={i} */
                   author={comment.author}
                   text={comment.text}
                   date={comment.date as Timestamp}
@@ -216,7 +220,7 @@ export default function Comments({ country }: CommentsProps) {
                 />
                 {user && user.email === comment.author && (
                   <UpdateCommentOption
-                    key={i}
+                    /* key={i} */
                     email={comment.author}
                     countryId={comment.countryId}
                     commentId={comment.commentId}
@@ -244,7 +248,7 @@ export default function Comments({ country }: CommentsProps) {
             color="primary"
             value={newCommentText}
             onChange={hadleInput}
-            multiline
+            /* multiline */
             minRows={3}
             maxRows={10}
             style={{
